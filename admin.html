@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Admin</title>
+        <meta charset="utf-8">
+        <meta name="description" content="" />
+
+        <!-- Grab CDN copy then if offline, revert to local copy -->
+        <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="js/jquery-1.7.1.min.js"><\/script>')</script>
+        <!--[if lt IE 9]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+        <script type="text/javascript" src="js/prettify.js"></script>                                   <!-- PRETTIFY -->
+        <script type="text/javascript" src="js/kickstart.js"></script>                                  <!-- KICKSTART -->
+        <script type="text/javascript" src="js/flowplayer-3.2.10.min.js"></script>                      <!-- Flowplayer script -->
+        <script type="text/javascript" src="js/ui.js"></script>                                         <!-- EMS UI script -->
+
+        <link rel="stylesheet" type="text/css" href="css/kickstart.css" media="all" />                  <!-- KICKSTART -->
+        <link rel="stylesheet" type="text/css" href="style.css" media="all" />                          <!-- CUSTOM STYLES -->
+
+    </head>
+    <body style="background-image: url(/img/background.jpg);">
+        <div id="wrap" class="clearfix">
+            <!-- ===================================== END HEADER ===================================== -->
+
+            <!-- This is the EMS banner -->
+            <div class="col_12 center">
+                <a href="http://www.pizara.net/safecity/" target="_blank"><img src="img/tophead.png" /></a>
+            </div>
+
+            <div class="instructions col_12">
+                <strong>Admin</strong>
+				
+			
+			</div>
+
+            <!-- HTML kickstart bug (don't remove) -->
+            <script type="text/javascript">
+            </script>
+
+            <div class="col_12"> <!-- Start Main DIV -->
+
+                <!-- Checking of SCSS server connection goes here -->
+                <label for="ipAddress"><em>Ingresar direccion IP del SCSS:</em></label>&nbsp;
+                <input id="ipAddress" type="text" name="ipAddress" placeholder="Direccion IP válida..." />&nbsp;
+                <button id="checkServer" type="button" class="pop"><span class="icon small" data-icon="_"></span>Conectar...</button>&nbsp;
+                <button id="refresh" type="button" class="pop"><span class="icon small" data-icon="a"></span></button>&nbsp;
+				<div id="statusMessage"></div>
+
+                <!-- Server commands -->
+                <div id="serverComandContainer" class="hide">
+
+                    <fieldset>
+                        <legend>Comandos de Servicio</legend>
+                        <select id="commandList" class="fancy" style="width: 540px;">
+                            <option value="none"> -- Escoger -- </option>
+                            <option value="addStream">Agregar stream de entrada</option>
+                            <option value="createHLS">Crear un stream HLS</option>
+                            <option value="listStream">Actualizar lista de streams</option>
+                            <option value="removeStream">Remover stream existente</option>
+                            <option value="sendMpegTs">Enviar MPEG-TS</option>
+                        </select>
+
+                        <!-- Container for Add command -->
+                        <div id="cmdAdd" class="hide">
+                            <label for="streamName" class="col_3"><em>Nombre del Stream:</em></label>
+                            <input id="streamName" class="col_9" style="width: 73%;" type="text" placeholder="nombre del stream..." />
+                            <label for="streamSource" class="col_3"><em>Fuente del Stream:</em></label>
+                            <input id="streamSource" class="col_9" style="width: 73%;" type="text" placeholder="fuente con el tipo de protocolo..." /> <br />
+							<input type="checkbox" id="forceTcp" checked="checked" /> <label for="forceTcp" class="inline"><em>Forzar TCP</em></label> <br />
+                            <div class="notice cmdIns">Ingresar los parametros requirido y luego presionar el boton 'Agregar Stream'.</div>
+                            <button id="cmdAddButton" type="button" class="pop blue"><span class="icon small" data-icon="p"></span>Agregar Stream</button>
+                        </div>
+
+                        <!-- Container for Remove command -->
+                        <div id="cmdRemove" class="hide">
+                            <div id="remNotice" class="notice cmdIns">Seleccionar un stream de la lista a quitar.</div>
+                            <button id="cmdRemButton" type="button" class="pop blue"><span class="icon small" data-icon="m"></span>Remover Stream</button>
+                        </div>
+
+                        <!-- Container for HLS command -->
+                        <div id="cmdHLS" class="hide">
+                            <label for="folderHls" class="col_3"><em>Directorio Destino:</em></label>
+                            <input id="folderHls" class="col_9" style="width: 73%;" type="text" placeholder="D:\wamp\www\hls" />
+                            <label for="gNameHls" class="col_3"><em>Nombre del Grupo:</em></label>
+                            <input id="gNameHls" class="col_9" style="width: 73%;" type="text" placeholder="hls_group_xXXx" />
+                            <label for="chunkLenHls" class="col_3"><em>Chunk:</em></label>
+                            <input id="chunkLenHls" class="col_9" style="width: 73%;" type="text" placeholder="10" />
+                            <div id="hlsNotice" class="notice cmdIns">Selecciona el stream de la lista y llena la configuración para crear un stream HLS.</div>
+                            <button id="cmdHlsButton" type="button" class="pop blue"><span class="icon small" data-icon="("></span>Crear Stream HLS</button>
+                        </div>
+
+                        <!-- Container for MPEG-TS command -->
+                        <div id="cmdMpegSend" class="hide">
+                            <label for="targetMpg" class="col_3"><em>Direcciones Destino</em></label>
+                            <input id="targetMpg" class="col_9" style="width: 73%;" type="text" placeholder="media server..." />
+                            <label for="targetPortMpg" class="col_3"><em>Puerto destino:</em></label>
+                            <input id="targetPortMpg" class="col_9" style="width: 73%;" type="text" placeholder="10000" />
+                            <div id="mpgNotice" class="notice cmdIns">Seleciona un stream de la lista e ingresa la direccion de destino a donde los paquetes MPEG-TS UDP seran enviados.</div>
+                            <button id="cmdSendMpgButton" type="button" class="pop blue"><span class="icon small" data-icon=")"></span>Enviar Stream MPEG-TS</button>&nbsp;
+                            <button id="cmdStopMpgButton" type="button" class="pop blue"><span class="icon small" data-icon="x"></span>Parar todos los Streams MPEG-TS</button>
+                        </div>
+
+                    </fieldset>
+
+                </div>
+
+                <!-- Stream List -->
+                <div id="streamList" class="hide"></div>
+
+                <!-- Stream Details -->
+                <div id="streamDetail" class="instructions col_12 hide">
+                    <h5>Detalles del Stream</h5>
+                    <label class="col_2"><em>Nombre:</em></label><input id="nameSrc" class="col_10" readonly="readonly" />
+                    <label class="col_2"><em>Fuente:</em></label><input id="srcSrc" class="col_10" readonly="readonly" />
+                    <label class="col_2"><em>RTMP:</em></label><input id="rtmpSrc" class="col_10" readonly="readonly" />
+                    <label class="col_2"><em>RTSP:</em></label><input id="rtspSrc" class="col_10" readonly="readonly" />
+                    <input id="idSrc" type="hidden" />
+                    <br /><br />
+                    <button id="playVid" type="button" class="pop blue"><span class="icon small" data-icon="2"></span>Ver Video</button>
+                </div>
+
+                <!-- Video container -->
+                <div id="videoContainer" class="col_12 hide" style="border:1px solid lightblue; background: #000; height: 300px; z-index:-1;"></div>
+
+            </div> <!-- End Main DIV -->
+
+
+            <!-- ===================================== START FOOTER ===================================== -->
+            <div class="clear"></div>
+            <div id="footer">
+			
+				
+				<div style="float:left;"> Evostream </div>
+				<br>
+			</div>
+
+        </div><!-- END WRAP -->
+		
+		<script>
+		$("#refresh").click(function() {
+			window.navigate("/");
+		});
+		</script>
+    </body>
+</html>
